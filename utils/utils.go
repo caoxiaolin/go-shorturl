@@ -75,25 +75,17 @@ func Convert_62_to_10(str string) int64 {
 func GetSortUrl(url string) string {
     dsn := "root:123456@tcp(192.168.245.128:3006)/sorturl?charset=utf8"
     db, _ := sql.Open("mysql", dsn)
-
-    //插入数据
     stmt, _ := db.Prepare("INSERT url SET url = ?")
-
     res, _ := stmt.Exec(url)
-
     id, _ := res.LastInsertId()
-
     return Convert_10_to_62(int(id))
 }
 
 func GetOriUrl(url string) string {
     dsn := "root:123456@tcp(192.168.245.128:3006)/sorturl?charset=utf8"
     db, _ := sql.Open("mysql", dsn)
-
     id := Convert_62_to_10(url)
-
     rows, _ := db.Query("SELECT url FROM url WHERE id = ?", id)
-
     var oriurl string
     for rows.Next() {
         err := rows.Scan(&oriurl)
