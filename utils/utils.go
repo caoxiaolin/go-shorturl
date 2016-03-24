@@ -2,18 +2,17 @@ package utils
 
 import (
     "strconv"
-    "strings"
-    "fmt"
+    "math"
 )
 
-func Str2int(char rune) int64{
+func Str2int(i rune) int64{
     var res  int32
-    if char >= 0 && char <= 9 {
-        res = char - 0
-    } else if char >= 'A' && char <= 'Z' {
-        res = char - 'A' + 10
+    if i >= 48 && i <= 57 {
+        res = i - 48
+    } else if i >= 65 && i <= 90 {
+        res = i - 65 + 10
     } else {
-        res = char - 'a' + 36
+        res = i - 97 + 36
     }
     return int64(res)
 }
@@ -31,24 +30,23 @@ func Int2str(i int) string {
 }
 
 func Convert_10_to_62(num int) string {
-    var res []string
+    var res string
     var ys int
     s := num
     for s >= 1 {
         tmp := s/62
         ys = s - tmp * 62
         s = tmp
-        res = append(res, Int2str(ys))
-        fmt.Println("s =", s, ", ys =", ys)
+        res = Int2str(ys) + res
     }
-    return strings.Join(res, "")
+    return res
 }
 
 func Convert_62_to_10(str string) int64 {
     var res int64 = 0
-    for _, s := range str {
-        fmt.Println("s =", s)
-        res = res + Str2int(s) * 62
+    len := len(str)
+    for k, v := range str {
+        res = res + Str2int(v) * int64(math.Pow(float64(62), float64(len - 1 - k)))
     }
     return res
 }
