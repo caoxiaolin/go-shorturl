@@ -3,11 +3,23 @@ package utils
 import (
     "strconv"
     "math"
+    _ "github.com/go-sql-driver/mysql"
+    "database/sql"
 )
 
+/**
+ *  62进制
+ *   '0'-'9' --- 0-9
+ *   A-Z     --- 10-35
+ *   a-z     --- 36-62
+ */
+
+/**
+ * 单个字符转数字，传入ascii
+ */
 func Str2int(i rune) int64{
     var res  int32
-    if i >= 48 && i <= 57 {
+     if i >= 48 && i <= 57 {
         res = i - 48
     } else if i >= 65 && i <= 90 {
         res = i - 65 + 10
@@ -17,6 +29,9 @@ func Str2int(i rune) int64{
     return int64(res)
 }
 
+/**
+ * 数字转字符
+ */
 func Int2str(i int) string {
     var res string
     if i >=0 && i <= 9 {
@@ -29,6 +44,9 @@ func Int2str(i int) string {
     return res
 }
 
+/**
+ * 10进制转62进制
+ */
 func Convert_10_to_62(num int) string {
     var res string
     var ys int
@@ -42,6 +60,9 @@ func Convert_10_to_62(num int) string {
     return res
 }
 
+/**
+ * 62进制转10进制
+ */
 func Convert_62_to_10(str string) int64 {
     var res int64 = 0
     len := len(str)
@@ -49,4 +70,36 @@ func Convert_62_to_10(str string) int64 {
         res = res + Str2int(v) * int64(math.Pow(float64(62), float64(len - 1 - k)))
     }
     return res
+}
+
+func GetSortUrl(url string) string {
+    dsn := "root:123456@tcp(192.168.245.128:3006)/sorturl?charset=utf8"
+    db, _ := sql.Open("mysql", dsn)
+
+    //插入数据
+    stmt, _ := db.Prepare("INSERT url SET url = ?")
+
+    res, _ := stmt.Exec(url)
+
+    id, _ := res.LastInsertId()
+
+    return Convert_10_to_62(int(id))
+}
+
+func GetOriUrl(url string) string {
+    dsn := "root:123456@tcp(192.168.245.128:3006)/sorturl?charset=utf8"
+    db, _ := sql.Open("mysql", dsn)
+
+    id := Convert_62_to_10(url)
+
+    rows, _ := db.Query("SELECT url FROM url WHERE id = ?", id)
+
+    var oriurl string
+    for rows.Next() {
+        err := rows.Scan(&oriurl)
+        if err != nil {
+            panic(err)
+        }
+    }
+    return oriurl
 }
