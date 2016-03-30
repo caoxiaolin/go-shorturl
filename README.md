@@ -12,7 +12,7 @@ post一个url过去，返回短链接
 # e.g.
 curl -d "url=http://www.github.com" "http://192.168.245.128:4000"
 
-oM1F
+http://192.168.245.128:4000/oM1F
 
 
 curl "http://192.168.245.128:4000/oM1F"
