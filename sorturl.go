@@ -1,3 +1,6 @@
+// Copyright 2016 caoxiaolin
+
+// 一个短链接服务.
 package main
 
 import (
@@ -22,11 +25,9 @@ func init() {
     db.Ping()
 }
 
-func (this Sorturl) ServeHTTP(
-    w http.ResponseWriter,
-    r *http.Request) {
+func (this Sorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     method := r.Method
-    if method == "GET" {
+    if method == "GET" { 
         uri := r.RequestURI
         l := len(uri)
         fmt.Fprint(w, utils.GetOriUrl(db, uri[1:l]))

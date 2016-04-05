@@ -1,3 +1,9 @@
+// 62进制转换规则
+// '0'-'9' --- 0-9
+// A-Z     --- 10-35
+// a-z     --- 36-62
+
+//utils tool
 package utils
 
 import (
@@ -7,16 +13,7 @@ import (
     "database/sql"
 )
 
-/**
- *  62进制
- *   '0'-'9' --- 0-9
- *   A-Z     --- 10-35
- *   a-z     --- 36-62
- */
-
-/**
- * 单个字符转数字，传入ascii
- */
+//单个字符转数字，传入ascii
 func Str2int(i rune) int64{
     var res  int32
      if i >= 48 && i <= 57 {
@@ -29,9 +26,7 @@ func Str2int(i rune) int64{
     return int64(res)
 }
 
-/**
- * 数字转字符
- */
+//数字转字符
 func Int2str(i int) string {
     var res string
     if i >=0 && i <= 9 {
@@ -44,9 +39,7 @@ func Int2str(i int) string {
     return res
 }
 
-/**
- * 10进制转62进制
- */
+//10进制转62进制
 func Convert_10_to_62(num int) string {
     var res string
     var ys int
@@ -60,9 +53,7 @@ func Convert_10_to_62(num int) string {
     return res
 }
 
-/**
- * 62进制转10进制
- */
+//62进制转10进制
 func Convert_62_to_10(str string) int64 {
     var res int64 = 0
     len := len(str)
@@ -72,6 +63,7 @@ func Convert_62_to_10(str string) int64 {
     return res
 }
 
+//获取短链接
 func GetSortUrl(db *sql.DB, url string) string {
     stmt, _ := db.Prepare("INSERT url SET url = ?")
     res, _ := stmt.Exec(url)
@@ -79,6 +71,7 @@ func GetSortUrl(db *sql.DB, url string) string {
     return Convert_10_to_62(int(id))
 }
 
+//获取原始链接
 func GetOriUrl(db *sql.DB, url string) string {
     id := Convert_62_to_10(url)
     rows, _ := db.Query("SELECT url FROM url WHERE id = ?", id)
