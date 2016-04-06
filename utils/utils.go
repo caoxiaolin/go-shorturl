@@ -81,7 +81,11 @@ func GetOriUrl(db *sql.DB, url string) string {
         if err != nil {
             panic(err)
         }
+        stmt, _ := db.Prepare("UPDATE url SET hits = hits + 1, last_access_time = NOW() WHERE id = ?")
+        stmt.Exec(id)
     }
+
     defer rows.Close()
+
     return oriurl
 }
