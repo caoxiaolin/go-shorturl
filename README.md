@@ -1,8 +1,8 @@
-# sorturl
-SortURL Service Written by GoLang
+# shorturl
+ShortURL Service Written by GoLang
 
 # get
-go get github.com/caoxiaolin/sorturl
+go get github.com/caoxiaolin/go-shorturl
 
 # usage
 http服务启动后
