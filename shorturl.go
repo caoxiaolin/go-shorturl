@@ -14,19 +14,19 @@ import (
 
 const host = "192.168.245.128:4000"
 
-type Sorturl struct{}
+type Shorturl struct{}
 
 var db *sql.DB
 
 func init() {
-	dsn := "root:123456@tcp(192.168.245.128:3550)/sorturl?charset=utf8"
+	dsn := "root:123456@tcp(192.168.245.128:3550)/shorturl?charset=utf8"
 	db, _ = sql.Open("mysql", dsn)
 	db.SetMaxOpenConns(2000)
 	db.SetMaxIdleConns(1000)
 	db.Ping()
 }
 
-func (this Sorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	method := r.Method
 	if method == "GET" {
 		uri := r.RequestURI
@@ -37,7 +37,7 @@ func (this Sorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "\n")
 	} else if method == "POST" {
 		r.ParseForm()
-		res := utils.GetSortUrl(db, r.Form["url"][0])
+		res := utils.GetShortUrl(db, r.Form["url"][0])
 		fmt.Println("[" + time.Now().Format("2006/01/02 15:04:05") + "] [POST] [" + r.Form["url"][0] + "] [" + res + "]")
 		fmt.Fprint(w, "http://"+host+"/"+res)
 		fmt.Fprint(w, "\n")
@@ -45,7 +45,7 @@ func (this Sorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	var s Sorturl
+	var s Shorturl
 	err := http.ListenAndServe(host, s)
 	if err != nil {
 		log.Fatal(err)

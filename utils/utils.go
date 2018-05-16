@@ -64,7 +64,7 @@ func Convert_62_to_10(str string) int64 {
 }
 
 //获取短链接
-func GetSortUrl(db *sql.DB, url string) string {
+func GetShortUrl(db *sql.DB, url string) string {
     stmt, _ := db.Prepare("INSERT url SET url = ?")
     res, _ := stmt.Exec(url)
     id, _ := res.LastInsertId()
