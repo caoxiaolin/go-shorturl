@@ -4,7 +4,7 @@
 package main
 
 import (
-	"github.com/caoxiaolin/go-shorturl/utils/"
+	"github.com/caoxiaolin/go-shorturl/utils"
 	"database/sql"
 	"fmt"
 	"log"
