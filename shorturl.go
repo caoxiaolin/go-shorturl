@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const host = "192.168.245.128:4000"
+const host = "127.0.0.1:4000"
 
 type Shorturl struct{}
 
