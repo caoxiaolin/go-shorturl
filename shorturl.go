@@ -40,8 +40,12 @@ func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		uri := r.RequestURI
 		l := len(uri)
 		res := utils.GetOriUrl(db, uri[1:l])
-		fmt.Fprintln(w, res)
-		log.Printf("[GET] [%s] [%s]", uri, res)
+		if res != "" {
+			fmt.Fprintln(w, res)
+		} else {
+			w.WriteHeader(404)
+		}
+		log.Printf("[GET] [%s] [%s]", uri, "404 NOT FOUND")
 	} else if method == "POST" {
 		r.ParseForm()
 		res := utils.GetShortUrl(db, r.Form["url"][0])
@@ -52,6 +56,7 @@ func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var s Shorturl
+	log.Printf("service starting...")
 	err := http.ListenAndServe(service, s)
 	if err != nil {
 		log.Fatal(err)

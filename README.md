@@ -20,11 +20,16 @@ post一个url过去，返回短链接
 请求短链接，返回原始的URL
 
 # e.g.
-curl -d "url=http://www.github.com" "http://192.168.245.128:4000"
-
-http://192.168.245.128:4000/oM1F
-
-
-curl "http://192.168.245.128:4000/oM1F"
-
+<pre>
+curl -d "url=http://www.github.com" "http://127.0.0.1:4000"
+http://127.0.0.1:4000/oM1F
+curl "http://127.0.0.1:4000/oM1F"
 http://www.github.com
+</pre>
+请求不存在的短链时：
+<pre>
+curl "http://127.0.0.1:4000/xx79y" -i
+HTTP/1.1 404 Not Found
+Date: Tue, 05 Jun 2018 10:18:12 GMT
+Content-Length: 0
+</pre>

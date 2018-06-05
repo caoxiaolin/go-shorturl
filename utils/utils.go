@@ -66,8 +66,7 @@ func Convert_62_to_10(str string) int64 {
 //获取短链接
 func GetShortUrl(db *sql.DB, url string) string {
 	var id int
-	sql := `INSERT INTO url (url, hits, create_time) VALUES ($1, 0, CURRENT_TIMESTAMP) RETURNING id`
-	err := db.QueryRow(sql, url).Scan(&id)
+	err := db.QueryRow(`INSERT INTO url (url, hits, create_time) VALUES ($1, 0, CURRENT_TIMESTAMP) RETURNING id`, url).Scan(&id)
 	if err != nil {
 		panic(err)
 	}
@@ -78,10 +77,10 @@ func GetShortUrl(db *sql.DB, url string) string {
 func GetOriUrl(db *sql.DB, url string) string {
 	var oriurl string
 	id := Convert_62_to_10(url)
-	sql := `SELECT url FROM url WHERE id = $1;`
-	err := db.QueryRow(sql, id).Scan(&oriurl)
+	err := db.QueryRow(`SELECT url FROM url WHERE id = $1`, id).Scan(&oriurl)
 	switch err {
-	//case sql.ErrNoRows:
+	case sql.ErrNoRows:
+		return ""
 	case nil:
 		//stmt, _ := db.Prepare("UPDATE url SET hits = hits + 1, last_access_time = NOW() WHERE id = ?")
 	default:
