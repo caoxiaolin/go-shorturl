@@ -36,11 +36,17 @@ func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		l := len(uri)
 		res := utils.GetOriUrl(db, uri[1:l])
 		if res != "" {
-			fmt.Fprintln(w, res)
+			//debug mode
+			debug, _ := r.Cookie("debug")
+			if debug != nil && debug.Value == "1" {
+				fmt.Fprintln(w, res)
+			} else {
+				http.Redirect(w, r, res, http.StatusFound)
+			}
 			log.Printf("[GET] [%s] [%s] [%s]", r.RemoteAddr, uri, res)
 		} else {
 			w.WriteHeader(404)
-			log.Printf("[GET] [%s] [%s] [%s]", r.RemoteAddr, uri, "404 NOT FOUND")
+			log.Printf("[GET] [%s] [%s] [404 NOT FOUND]", r.RemoteAddr, uri)
 		}
 	} else if method == "POST" {
 		r.ParseForm()
