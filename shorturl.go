@@ -6,31 +6,26 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/caoxiaolin/go-shorturl/config"
 	"github.com/caoxiaolin/go-shorturl/utils"
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 )
 
-const service = "127.0.0.1:4000"
-
-const (
-	dbhost   = "127.0.0.1"
-	dbport   = 5432
-	username = "rdtest"
-	password = "123456"
-	dbname   = "shorturl"
-)
-
 type Shorturl struct{}
 
-var db *sql.DB
+var (
+	address string
+	db      *sql.DB
+	cfg     *config.TomlConfig
+)
 
 func init() {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", dbhost, dbport, username, password, dbname)
+	cfg = config.Load()
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.Database.Host, cfg.Database.Port, cfg.Database.UserName, cfg.Database.PassWord, cfg.Database.DbName)
 	db, _ = sql.Open("postgres", dsn)
-	db.SetMaxOpenConns(2000)
-	db.SetMaxIdleConns(1000)
+	db.SetMaxOpenConns(cfg.Database.MaxConn)
 	db.Ping()
 }
 
@@ -42,22 +37,24 @@ func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		res := utils.GetOriUrl(db, uri[1:l])
 		if res != "" {
 			fmt.Fprintln(w, res)
+			log.Printf("[GET] [%s] [%s] [%s]", r.RemoteAddr, uri, res)
 		} else {
 			w.WriteHeader(404)
+			log.Printf("[GET] [%s] [%s] [%s]", r.RemoteAddr, uri, "404 NOT FOUND")
 		}
-		log.Printf("[GET] [%s] [%s]", uri, "404 NOT FOUND")
 	} else if method == "POST" {
 		r.ParseForm()
 		res := utils.GetShortUrl(db, r.Form["url"][0])
-		fmt.Fprintln(w, "http://"+service+"/"+res)
-		log.Printf("[POST] [%s] [%s]", r.Form["url"][0], res)
+		fmt.Fprintln(w, "http://"+address+"/"+res)
+		log.Printf("[POST] [%s] [%s] [%s]", r.RemoteAddr, r.Form["url"][0], res)
 	}
 }
 
 func main() {
 	var s Shorturl
-	log.Printf("service starting...")
-	err := http.ListenAndServe(service, s)
+	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
+	log.Printf("service starting on " + address + " ...")
+	err := http.ListenAndServe(address, s)
 	if err != nil {
 		log.Fatal(err)
 	}

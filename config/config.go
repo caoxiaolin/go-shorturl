@@ -6,17 +6,17 @@ import (
 )
 
 type TomlConfig struct {
-	Server server
+	Server   server
 	Database database
 }
 
 type database struct {
-	Host string
-	Port int
+	Host     string
+	Port     int
 	UserName string
 	PassWord string
-	DbName string
-	MaxConn int
+	DbName   string
+	MaxConn  int
 }
 
 type server struct {
