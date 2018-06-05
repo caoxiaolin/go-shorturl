@@ -9,8 +9,9 @@ package utils
 import (
     "strconv"
     "math"
-    _ "github.com/go-sql-driver/mysql"
+	"log"
     "database/sql"
+    _ "github.com/lib/pq"
 )
 
 //单个字符转数字，传入ascii
@@ -65,9 +66,11 @@ func Convert_62_to_10(str string) int64 {
 
 //获取短链接
 func GetShortUrl(db *sql.DB, url string) string {
-    stmt, _ := db.Prepare("INSERT url SET url = ?")
-    res, _ := stmt.Exec(url)
-    id, _ := res.LastInsertId()
+	sql := "INSERT INTO url (url, hits, create_time) VALUES ('$1', 0, CURRENT_TIMESTAMP) RETURNING id"
+    err := db.QueryRow(sql, url).Scan(&id)
+    if err != nil {
+        panic(err)
+    }
     return Convert_10_to_62(int(id))
 }
 
