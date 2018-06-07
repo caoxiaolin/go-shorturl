@@ -23,6 +23,8 @@ var (
 
 func init() {
 	cfg = config.Load()
+	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
+
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.Database.Host, cfg.Database.Port, cfg.Database.UserName, cfg.Database.PassWord, cfg.Database.DbName)
 	db, _ = sql.Open("postgres", dsn)
 	db.SetMaxOpenConns(cfg.Database.MaxConn)
@@ -45,7 +47,7 @@ func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			log.Printf("[GET] [%s] [%s] [%s]", r.RemoteAddr, uri, res)
 		} else {
-			w.WriteHeader(404)
+			http.NotFound(w, r)
 			log.Printf("[GET] [%s] [%s] [404 NOT FOUND]", r.RemoteAddr, uri)
 		}
 	} else if method == "POST" {
@@ -57,11 +59,6 @@ func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	var s Shorturl
-	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-	log.Printf("service starting on " + address + " ...")
-	err := http.ListenAndServe(address, s)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Printf("Service starting on " + address + " ...")
+	log.Fatal(http.ListenAndServe(address, new(Shorturl)))
 }

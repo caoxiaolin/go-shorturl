@@ -22,13 +22,13 @@ func init() {
 func TestGeturl(t *testing.T) {
 	resp, err := http.Get("http://" + address + "/1")
 	if err != nil {
-		t.Error("http server error")
+		t.Error("Http server error")
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 404 {
-		t.Error("http code expected 404, but got ", resp.StatusCode)
+		t.Error("Http code expected 404, but got ", resp.StatusCode)
 	}
 }
 
@@ -37,13 +37,13 @@ func TestSeturl(t *testing.T) {
 		"application/x-www-form-urlencoded",
 		strings.NewReader("url=http://www.google.com"))
 	if err != nil {
-		t.Error("http server error")
+		t.Error("Post data to http server error")
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		t.Error("http server error")
+		t.Error("Read data from http server error")
 	}
 
 	response := string(body)
