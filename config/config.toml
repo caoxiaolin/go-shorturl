@@ -1,11 +1,11 @@
 [server]
-host = "192.168.73.128"
+host = "127.0.0.1"
 port = 4000
 
 [database]
 host     = "127.0.0.1"
 port   	 = 5432
-username = "rdtest"
-password = "123456"
+username = "postgres"
+password = ""
 dbname   = "shorturl"
 maxconn  = 2000
