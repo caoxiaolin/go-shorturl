@@ -10,5 +10,18 @@ services:
 before_install:
   - go get -v github.com/caoxiaolin/go-shorturl
 
+before_script:
+  - psql -c "CREATE USER rdtest WITH PASSWORD '123456';" -U postgres
+  - psql -c "CREATE DATABASE shorturl OWNER rdtest;" -U postgres
+  - psql -c "GRANT ALL PRIVILEGES ON DATABASE shorturl TO rdtest;" -U postgres
+  - psql -c "CREATE TABLE url (
+				  id bigserial,
+				  url character varying,
+				  hits bigint,
+				  create_time timestamp,
+				  last_access_time timestamp,
+				  PRIMARY KEY (id)
+			 );" -U rdtest
+
 script:
   - go test -v ./...
