@@ -16,4 +16,7 @@ before_script:
   - sleep 5s
 
 script:
-  - go test -v ./tests/
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./tests/
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

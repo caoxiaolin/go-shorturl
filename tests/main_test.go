@@ -11,6 +11,7 @@ import (
 
 var (
 	address string
+	url     string
 	cfg     *config.TomlConfig
 )
 
@@ -19,10 +20,10 @@ func init() {
 	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 }
 
-func TestGeturl(t *testing.T) {
-	resp, err := http.Get("http://" + address + "/1")
+func TestGetNonexistentUrl(t *testing.T) {
+	resp, err := http.Get("http://" + address + "/0")
 	if err != nil {
-		t.Error("Http server error")
+		t.Error(err)
 	}
 
 	defer resp.Body.Close()
@@ -33,21 +34,43 @@ func TestGeturl(t *testing.T) {
 }
 
 func TestSeturl(t *testing.T) {
-	resp, err := http.Post("http://"+address,
-		"application/x-www-form-urlencoded",
-		strings.NewReader("url=http://www.google.com"))
+	resp, err := http.Post("http://"+address, "application/x-www-form-urlencoded", strings.NewReader("url=http://www.google.com"))
 	if err != nil {
-		t.Error("Post data to http server error")
+		t.Error(err)
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		t.Error("Read data from http server error")
+		t.Error(err)
 	}
 
-	response := string(body)
-	if strings.TrimSpace(response) != "http://"+address+"/1" {
-		t.Error("Expected http://"+address+"/1, but got ", response)
+	url = strings.TrimSpace(string(body))
+	if url == "" {
+		t.Error("Expected http://", address, "/..., but got empty")
+	}
+}
+
+func TestGetExistedUrl(t *testing.T) {
+	client := &http.Client{}
+
+	// Declare HTTP Method and Url
+	req, err := http.NewRequest("GET", url, nil)
+
+	// Set cookie
+	req.Header.Set("Cookie", "debug=1")
+	resp, err := client.Do(req)
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	res := strings.TrimSpace(string(body))
+	if res != "http://www.google.com" {
+		t.Error("Expected http://www.google.com, but got ", res)
 	}
 }
