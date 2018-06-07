@@ -1,3 +1,4 @@
+[![Build Status](https://www.travis-ci.org/caoxiaolin/go-shorturl.svg?branch=master)](https://www.travis-ci.org/caoxiaolin/go-shorturl)
 # shorturl
 ShortURL Service Written by GoLang
 

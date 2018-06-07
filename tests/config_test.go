@@ -1,11 +1,13 @@
 package tests
 
-import "testing"
-import "github.com/caoxiaolin/go-shorturl/config"
+import (
+	"github.com/caoxiaolin/go-shorturl/config"
+	"testing"
+)
 
 func TestLoad(t *testing.T) {
-	ret := config.Load()
-	if ret.Database.Host != "127.0.0.1" {
-		t.Error("Expected 127.0.0.1, got ", ret)
+	cfg := config.Load()
+	if cfg.Database.Host != "127.0.0.1" {
+		t.Error("Expected 127.0.0.1, got ", cfg.Database.Host)
 	}
 }

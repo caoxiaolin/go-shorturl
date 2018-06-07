@@ -1,7 +1,9 @@
 package tests
 
-import "testing"
-import "github.com/caoxiaolin/go-shorturl/utils"
+import (
+	"github.com/caoxiaolin/go-shorturl/utils"
+	"testing"
+)
 
 func TestConvert_10_to_62(t *testing.T) {
 	ret := utils.Convert_10_to_62(10000)
