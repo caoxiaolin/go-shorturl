@@ -6,14 +6,24 @@ go get github.com/caoxiaolin/go-shorturl
 
 # database
 <pre>
-su - postgres
-psql
-CREATE USER rdtest WITH PASSWORD '123456';
-CREATE DATABASE shorturl OWNER rdtest;
-GRANT ALL PRIVILEGES ON DATABASE shorturl TO rdtest;
-</pre>
-psql -U rdtest -d shorturl
+> su - postgres
+> psql
+postgres=# CREATE USER rdtest WITH PASSWORD '123456';
+postgres=# CREATE DATABASE shorturl OWNER rdtest;
+postgres=# GRANT ALL PRIVILEGES ON DATABASE shorturl TO rdtest;
+postgres=# \q
 
+> psql -U rdtest -d shorturl
+shorturl=> CREATE TABLE url (
+      id bigserial,
+      url character varying,
+      hits bigint,
+      create_time timestamp,
+      last_access_time timestamp,
+      PRIMARY KEY (id)
+);
+shorturl=> \q
+</pre>
 # usage
 http服务启动后
 post一个url过去，返回短链接
