@@ -47,7 +47,7 @@ func TestSeturl(t *testing.T) {
 	}
 
 	response := string(body)
-	if response != "http://"+address+"/1" {
+	if strings.TrimSpace(response) != "http://"+address+"/1" {
 		t.Error("Expected http://"+address+"/1, but got ", response)
 	}
 }
