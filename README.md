@@ -27,7 +27,7 @@ shorturl=> \q
 # usage
 http服务启动后
 post一个url过去，返回短链接
-请求短链接，返回原始的URL
+请求短链接，返回原始的URL，链接不存在，则返回404
 
 # e.g.
 <pre>
