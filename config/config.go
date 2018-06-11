@@ -24,8 +24,8 @@ type server struct {
 	Port int
 }
 
-func Load() *TomlConfig {
-	filePath, err := filepath.Abs("config/config.toml")
+func Load(path string) *TomlConfig {
+	filePath, err := filepath.Abs(path + "config.toml")
 	if err != nil {
 		panic(err)
 	}

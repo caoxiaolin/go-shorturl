@@ -1,4 +1,4 @@
-package tests
+package main
 
 import (
 	"fmt"
@@ -9,14 +9,10 @@ import (
 	"testing"
 )
 
-var (
-	address string
-	url     string
-	cfg     *config.TomlConfig
-)
+var url string
 
 func init() {
-	cfg = config.Load()
+	cfg = config.Load("./config/")
 	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 }
 

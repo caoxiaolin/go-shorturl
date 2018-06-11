@@ -22,7 +22,7 @@ var (
 )
 
 func init() {
-	cfg = config.Load()
+	cfg = config.Load("./config/")
 	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.Database.Host, cfg.Database.Port, cfg.Database.UserName, cfg.Database.PassWord, cfg.Database.DbName)
