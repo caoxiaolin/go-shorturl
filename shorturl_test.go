@@ -1,72 +1,98 @@
 package main
 
 import (
-	"fmt"
-	"github.com/caoxiaolin/go-shorturl/config"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 )
 
-var url string
+var uri string
 
-func init() {
-	cfg = config.Load("./config/")
-	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-}
-
+/**
+ * 测试获取一个不存在的短链，应该返回404
+ */
 func TestGetNonexistentUrl(t *testing.T) {
-	resp, err := http.Get("http://" + address + "/0")
+	req, err := http.NewRequest("GET", "/0", nil)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
-	defer resp.Body.Close()
+	rr := httptest.NewRecorder()
+	ShorturlServer(rr, req)
 
-	if resp.StatusCode != 404 {
-		t.Error("Http code expected 404, but got ", resp.StatusCode)
+	if rr.Code != 404 {
+		t.Error("Http code expected 404, but got ", rr.Code)
 	}
 }
 
+/**
+ * 测试生成一个新的短链
+ */
 func TestSeturl(t *testing.T) {
-	resp, err := http.Post("http://"+address, "application/x-www-form-urlencoded", strings.NewReader("url=http://www.google.com"))
+	req := httptest.NewRequest("POST", "/", strings.NewReader("url=http://www.google.com"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	ShorturlServer(rr, req)
+	result := rr.Result()
+	body, err := ioutil.ReadAll(result.Body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Error(err)
+	u := strings.TrimSpace(string(body))
+	if u == "" {
+		t.Error("Expected http://"+address, "/..., but got ", u)
 	}
 
-	url = strings.TrimSpace(string(body))
-	if url == "" {
-		t.Error("Expected http://", address, "/..., but got empty")
+	urlParse, _ := url.Parse(u)
+	uri = urlParse.Path
+}
+
+/**
+ * 测试获取已经存在的短链
+ */
+func TestGetExistedUrl(t *testing.T) {
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Cookie", "debug=1")
+	rr := httptest.NewRecorder()
+	ShorturlServer(rr, req)
+
+	if rr.Code != 200 {
+		t.Error("Http code expected 200, but got ", rr.Code)
+	}
+
+	result := rr.Result()
+	body, err := ioutil.ReadAll(result.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	u := strings.TrimSpace(string(body))
+	if u != "http://www.google.com" {
+		t.Error("Expected http://www.google.com, but got", u)
 	}
 }
 
-func TestGetExistedUrl(t *testing.T) {
-	client := &http.Client{}
-
-	// Declare HTTP Method and Url
-	req, err := http.NewRequest("GET", url, nil)
-
-	// Set cookie
-	req.Header.Set("Cookie", "debug=1")
-	resp, err := client.Do(req)
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-
+/**
+ * 测试获取短链并跳转
+ */
+func TestRedirectUrl(t *testing.T) {
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
-	res := strings.TrimSpace(string(body))
-	if res != "http://www.google.com" {
-		t.Error("Expected http://www.google.com, but got ", res)
+	rr := httptest.NewRecorder()
+	ShorturlServer(rr, req)
+
+	if rr.Code != 302 {
+		t.Error("Http code expected 302, but got ", rr.Code)
 	}
 }

@@ -13,8 +13,6 @@ import (
 	"net/http"
 )
 
-type Shorturl struct{}
-
 var (
 	address string
 	db      *sql.DB
@@ -31,10 +29,10 @@ func init() {
 	db.Ping()
 }
 
-func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func ShorturlServer(w http.ResponseWriter, r *http.Request) {
 	method := r.Method
 	if method == "GET" {
-		uri := r.RequestURI
+		uri := r.URL.Path
 		l := len(uri)
 		res := utils.GetOriUrl(db, uri[1:l])
 		if res != "" {
@@ -60,5 +58,6 @@ func (this Shorturl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	log.Printf("Service starting on " + address + " ...")
-	log.Fatal(http.ListenAndServe(address, new(Shorturl)))
+	http.HandleFunc("/", ShorturlServer)
+	log.Fatal(http.ListenAndServe(address, nil))
 }

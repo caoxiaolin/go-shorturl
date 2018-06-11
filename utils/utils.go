@@ -63,7 +63,7 @@ func Convert_62_to_10(str string) int64 {
 	return res
 }
 
-//获取短链接
+//URL入库并生成短链接返回
 func GetShortUrl(db *sql.DB, url string) string {
 	var id int
 	err := db.QueryRow(`INSERT INTO url (url, hits, create_time) VALUES ($1, 0, CURRENT_TIMESTAMP) RETURNING id`, url).Scan(&id)
