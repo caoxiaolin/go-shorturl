@@ -1,4 +1,5 @@
 [![Build Status](https://www.travis-ci.org/caoxiaolin/go-shorturl.svg?branch=master)](https://www.travis-ci.org/caoxiaolin/go-shorturl)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/caoxiaolin/go-shorturl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/caoxiaolin/go-shorturl/?branch=master)
 [![codecov.io](https://codecov.io/github/caoxiaolin/go-shorturl/coverage.svg?branch=master)](https://codecov.io/github/caoxiaolin/go-shorturl?branch=master)
 # shorturl
 ShortURL Service Written by GoLang
