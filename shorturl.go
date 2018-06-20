@@ -29,6 +29,7 @@ func init() {
 	db.Ping()
 }
 
+// ShorturlServer handle post or get requests
 func ShorturlServer(w http.ResponseWriter, r *http.Request) {
 	method := r.Method
 	if method == "GET" {
@@ -57,7 +58,7 @@ func ShorturlServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	log.Printf("Service starting on " + address + " ...")
+	log.Printf("Service starting on %s ...", address)
 	http.HandleFunc("/", ShorturlServer)
 	log.Fatal(http.ListenAndServe(address, nil))
 }
