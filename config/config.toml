@@ -11,5 +11,5 @@ dbname   = "shorturl"
 maxconn  = 2000
 
 [log]
-logpath  = "./log/"
+logpath  = "./"
 logfile  = "access.log"
