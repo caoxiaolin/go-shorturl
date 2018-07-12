@@ -8,8 +8,8 @@ package utils
 
 import (
 	"math"
+	"net/http"
 	"strconv"
-    "net/http"
 )
 
 // Str2int用来单个字符转数字，传入ascii
@@ -64,9 +64,9 @@ func Convert_62_to_10(str string) int64 {
 
 // GetPostUrl 从http请求中解析并校验url
 func GetPostUrl(r *http.Request) string {
-    r.ParseForm()
-    if r.Form["url"] == nil {
-        return ""
-    }
-    return r.Form["url"][0]
+	r.ParseForm()
+	if r.Form["url"] == nil {
+		return ""
+	}
+	return r.Form["url"][0]
 }

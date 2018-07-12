@@ -8,31 +8,31 @@ package utils
 
 import (
 	"database/sql"
-    "github.com/caoxiaolin/go-shorturl/config"
-    "errors"
-    "fmt"
+	"errors"
+	"fmt"
+	"github.com/caoxiaolin/go-shorturl/config"
 	_ "github.com/lib/pq"
 )
 
 var db *sql.DB
 
 func init() {
-    dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Cfg.Database.Host, config.Cfg.Database.Port, config.Cfg.Database.UserName, config.Cfg.Database.PassWord, config.Cfg.Database.DbName)
-    db, _ = sql.Open("postgres", dsn)
-    db.SetMaxOpenConns(config.Cfg.Database.MaxConn)
-    db.Ping()
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Cfg.Database.Host, config.Cfg.Database.Port, config.Cfg.Database.UserName, config.Cfg.Database.PassWord, config.Cfg.Database.DbName)
+	db, _ = sql.Open("postgres", dsn)
+	db.SetMaxOpenConns(config.Cfg.Database.MaxConn)
+	db.Ping()
 }
 
 // GetShortUrl 将传入的URL入库并生成短链接返回
 func GetShortUrl(url string) (string, error) {
 	var id int64
-    if url == "" {
-        return "", errors.New("post url is empty")
-    }
-    err := db.QueryRow(`INSERT INTO url (url, hits, create_time) VALUES ($1, 0, CURRENT_TIMESTAMP) RETURNING id`, url).Scan(&id)
-    if err != nil {
-        return "", err
-    }
+	if url == "" {
+		return "", errors.New("post url is empty")
+	}
+	err := db.QueryRow(`INSERT INTO url (url, hits, create_time) VALUES ($1, 0, CURRENT_TIMESTAMP) RETURNING id`, url).Scan(&id)
+	if err != nil {
+		return "", err
+	}
 	return Convert_10_to_62(int64(id)), nil
 }
 
