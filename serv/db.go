@@ -1,16 +1,14 @@
-// 62进制转换规则
-// '0'-'9' --- 0-9
-// A-Z     --- 10-35
-// a-z     --- 36-62
+//数据库相关的操作
 
-//utils tool
-package utils
+//service
+package serv
 
 import (
 	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/caoxiaolin/go-shorturl/config"
+	"github.com/caoxiaolin/go-shorturl/utils"
 	_ "github.com/lib/pq"
 )
 
@@ -33,13 +31,13 @@ func GetShortUrl(url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return Convert_10_to_62(int64(id)), nil
+	return utils.Convert_10_to_62(int64(id)), nil
 }
 
 // GetOriUrl 根据传入的短链接查询获取原始链接并返回
 func GetOriUrl(url string) string {
 	var oriurl string
-	id := Convert_62_to_10(url)
+	id := utils.Convert_62_to_10(url)
 	err := db.QueryRow(`SELECT url FROM url WHERE id = $1`, id).Scan(&oriurl)
 	switch err {
 	case sql.ErrNoRows:

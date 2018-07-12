@@ -6,7 +6,9 @@ package main
 import (
 	"fmt"
 	"github.com/caoxiaolin/go-shorturl/config"
+	"github.com/caoxiaolin/go-shorturl/serv"
 	"github.com/caoxiaolin/go-shorturl/utils"
+	"github.com/gomodule/redigo/redis"
 	"log"
 	"net/http"
 )
@@ -31,12 +33,14 @@ func ShorturlServer(w http.ResponseWriter, r *http.Request) {
 // handlePost can handle post request
 func handlePost(w http.ResponseWriter, r *http.Request) {
 	postUrl := utils.GetPostUrl(r)
-	res, err := utils.GetShortUrl(postUrl)
+	res, err := serv.GetShortUrl(postUrl)
 	if err != nil {
 		res = err.Error()
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, res)
 	} else {
+		rdskey := "su_" + res
+		serv.Rds.Do("SET", rdskey, postUrl, "EX", 86400)
 		fmt.Fprintln(w, "http://"+address+"/"+res)
 	}
 	utils.Logger.Printf("[POST] [%s] [%s] [%s]", r.RemoteAddr, postUrl, res)
@@ -45,10 +49,17 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 
 // handleGet can handle get request
 func handleGet(w http.ResponseWriter, r *http.Request) {
+	var res string
 	uri := r.URL.Path
 	l := len(uri)
-	res := utils.GetOriUrl(uri[1:l])
+	rdskey := "su_" + uri[1:l]
+	if rdsval, _ := redis.String(serv.Rds.Do("GET", rdskey)); rdsval != "" {
+		res = rdsval
+	} else {
+		res = serv.GetOriUrl(uri[1:l])
+	}
 	if res != "" {
+		serv.Rds.Do("SET", rdskey, res, "EX", 86400, "NX")
 		//debug mode
 		debug, _ := r.Cookie("debug")
 		if debug != nil && debug.Value == "1" {

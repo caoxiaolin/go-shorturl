@@ -9,6 +9,7 @@ import (
 type TomlConfig struct {
 	Server   server
 	Database database
+	Redis    redis
 	Log      log
 }
 
@@ -19,6 +20,13 @@ type database struct {
 	PassWord string
 	DbName   string
 	MaxConn  int
+}
+
+type redis struct {
+	Host     string
+	Port     int
+	Password string
+	Database int
 }
 
 type server struct {
