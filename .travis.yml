@@ -5,6 +5,7 @@ go:
 
 services:
   - postgresql
+  - redis
 
 before_install:
   - go get -v github.com/caoxiaolin/go-shorturl
