@@ -4,38 +4,50 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/caoxiaolin/go-shorturl/config"
 	"github.com/caoxiaolin/go-shorturl/utils"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 )
 
 var (
 	address string
-	db      *sql.DB
-	cfg     *config.TomlConfig
 )
 
 func init() {
-	cfg = config.Load("./config/")
-	address = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.Database.Host, cfg.Database.Port, cfg.Database.UserName, cfg.Database.PassWord, cfg.Database.DbName)
-	db, _ = sql.Open("postgres", dsn)
-	db.SetMaxOpenConns(cfg.Database.MaxConn)
-	db.Ping()
+	address = fmt.Sprintf("%s:%d", config.Cfg.Server.Host, config.Cfg.Server.Port)
 }
 
 // ShorturlServer handle post or get requests
 func ShorturlServer(w http.ResponseWriter, r *http.Request) {
-	method := r.Method
-	if method == "GET" {
+	if r.Method == "GET" {
+	    handleGet(w, r)
+    } else if r.Method == "POST" {
+        handlePost(w, r)
+	}
+}
+
+// handlePost can handle post request
+func handlePost(w http.ResponseWriter, r *http.Request){
+        postUrl := utils.GetPostUrl(r)
+		res, err := utils.GetShortUrl(postUrl)
+        if err != nil {
+            res = err.Error()
+            w.WriteHeader(http.StatusBadRequest)
+		    fmt.Fprintln(w, res)
+        } else {
+		    fmt.Fprintln(w, "http://"+address+"/"+res)
+        }
+		utils.Logger.Printf("[POST] [%s] [%s] [%s]", r.RemoteAddr, postUrl, res)
+
+}
+
+// handleGet can handle get request
+func handleGet(w http.ResponseWriter, r *http.Request){
 		uri := r.URL.Path
 		l := len(uri)
-		res := utils.GetOriUrl(db, uri[1:l])
+		res := utils.GetOriUrl(uri[1:l])
 		if res != "" {
 			//debug mode
 			debug, _ := r.Cookie("debug")
@@ -44,21 +56,16 @@ func ShorturlServer(w http.ResponseWriter, r *http.Request) {
 			} else {
 				http.Redirect(w, r, res, http.StatusFound)
 			}
-			log.Printf("[GET] [%s] [%s] [%s]", r.RemoteAddr, uri, res)
+			utils.Logger.Printf("[GET] [%s] [%s] [%s]", r.RemoteAddr, uri, res)
 		} else {
 			http.NotFound(w, r)
-			log.Printf("[GET] [%s] [%s] [404 NOT FOUND]", r.RemoteAddr, uri)
+			utils.Logger.Printf("[GET] [%s] [%s] [404 NOT FOUND]", r.RemoteAddr, uri)
 		}
-	} else if method == "POST" {
-		r.ParseForm()
-		res := utils.GetShortUrl(db, r.Form["url"][0])
-		fmt.Fprintln(w, "http://"+address+"/"+res)
-		log.Printf("[POST] [%s] [%s] [%s]", r.RemoteAddr, r.Form["url"][0], res)
-	}
+
 }
 
 func main() {
 	log.Printf("Service starting on %s ...", address)
 	http.HandleFunc("/", ShorturlServer)
-	log.Fatal(http.ListenAndServe(address, nil))
+	utils.Logger.Fatal(http.ListenAndServe(address, nil))
 }

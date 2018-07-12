@@ -9,6 +9,7 @@ package utils
 import (
 	"math"
 	"strconv"
+    "net/http"
 )
 
 // Str2int用来单个字符转数字，传入ascii
@@ -25,7 +26,7 @@ func Str2int(i rune) int64 {
 }
 
 // Int2str用来数字转字符
-func Int2str(i int) string {
+func Int2str(i int64) string {
 	var res string
 	if i >= 0 && i <= 9 {
 		res = strconv.Itoa(int(i))
@@ -38,9 +39,9 @@ func Int2str(i int) string {
 }
 
 // Convert_10_to_62用于10进制转62进制
-func Convert_10_to_62(num int) string {
+func Convert_10_to_62(num int64) string {
 	var res string
-	var ys int
+	var ys int64
 	s := num
 	for s >= 1 {
 		tmp := s / 62
@@ -59,4 +60,13 @@ func Convert_62_to_10(str string) int64 {
 		res = res + Str2int(v)*int64(math.Pow(float64(62), float64(len-1-k)))
 	}
 	return res
+}
+
+// GetPostUrl 从http请求中解析并校验url
+func GetPostUrl(r *http.Request) string {
+    r.ParseForm()
+    if r.Form["url"] == nil {
+        return ""
+    }
+    return r.Form["url"][0]
 }

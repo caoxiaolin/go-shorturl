@@ -3,11 +3,13 @@ package config
 import (
 	"github.com/BurntSushi/toml"
 	"path/filepath"
+    "os"
 )
 
 type TomlConfig struct {
 	Server   server
 	Database database
+    Log      log
 }
 
 type database struct {
@@ -24,14 +26,21 @@ type server struct {
 	Port int
 }
 
-func Load(path string) *TomlConfig {
-	filePath, err := filepath.Abs(path + "config.toml")
-	if err != nil {
+type log struct {
+    Logpath     string
+    Logfile     string
+}
+
+var Cfg *TomlConfig
+
+func init(){
+	filePath, _ := filepath.Abs("./config/config.toml")
+    _, err := os.Stat(filePath)
+    if os.IsNotExist(err) {
+        filePath, _ = filepath.Abs("../config/config.toml")
+    }
+    Cfg = new(TomlConfig)
+	if _, err := toml.DecodeFile(filePath, &Cfg); err != nil {
 		panic(err)
 	}
-	var config = new(TomlConfig)
-	if _, err := toml.DecodeFile(filePath, &config); err != nil {
-		panic(err)
-	}
-	return config
 }
