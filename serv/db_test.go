@@ -21,14 +21,16 @@ func TestGetShortUrl(t *testing.T) {
 	}
 }
 
-func TestGetOriUrl(t *testing.T) {
+func TestGetNoExistedOriUrl(t *testing.T) {
 	ourl, _ := GetOriUrl("0")
 	if ourl != "" {
 		t.Error("Expected empty, but got", ourl)
 	}
+}
 
+func TestGetOriUrl(t *testing.T) {
 	if surl != "" {
-		ourl, _ = GetOriUrl(surl)
+		ourl, _ := GetOriUrl(surl)
 		if ourl != turl {
 			t.Error("Expected", surl, ", but got", ourl)
 		}
