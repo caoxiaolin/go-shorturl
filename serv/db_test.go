@@ -10,9 +10,9 @@ var (
 )
 
 func TestGetShortUrl(t *testing.T) {
-	surl, err := GetShortUrl("")
+	_, err := GetShortUrl("")
 	if err == nil {
-		t.Error("Expected empty, but got", surl)
+		t.Error("Expected empty")
 	}
 
 	surl, _ = GetShortUrl(turl)
@@ -30,7 +30,10 @@ func TestGetNoExistedOriUrl(t *testing.T) {
 
 func TestGetOriUrl(t *testing.T) {
 	if surl != "" {
-		ourl, _ := GetOriUrl(surl)
+		ourl, err := GetOriUrl(surl)
+		if err != nil {
+			t.Error(err)
+		}
 		if ourl != turl {
 			t.Error("Expected", surl, ", but got", ourl)
 		}
