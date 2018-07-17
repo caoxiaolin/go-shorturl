@@ -29,6 +29,19 @@ func TestGetNonexistentUrl(t *testing.T) {
 }
 
 /**
+ * 测试POST一个错误数据
+ */
+func TestPostError(t *testing.T) {
+	req := httptest.NewRequest("POST", "/", strings.NewReader("error=1"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	ShorturlServer(rr, req)
+	if rr.Code != 400 {
+		t.Error("Http code expected 400, but got ", rr.Code)
+	}
+}
+
+/**
  * 测试生成一个新的短链
  */
 func TestSeturl(t *testing.T) {
