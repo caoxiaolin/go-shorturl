@@ -25,7 +25,7 @@ func init() {
 func GetShortUrl(url string) (string, error) {
 	var id int64
 	if url == "" {
-		return "", errors.New("post url is empty")
+		return "", errors.New("url is empty")
 	}
 	err := db.QueryRow(`INSERT INTO url (url, hits, create_time) VALUES ($1, 0, CURRENT_TIMESTAMP) RETURNING id`, url).Scan(&id)
 	if err != nil {
@@ -35,24 +35,24 @@ func GetShortUrl(url string) (string, error) {
 }
 
 // GetOriUrl 根据传入的短链接查询获取原始链接并返回
-func GetOriUrl(url string) string {
+func GetOriUrl(url string) (string, error) {
 	var oriurl string
 	id := utils.Convert_62_to_10(url)
 	err := db.QueryRow(`SELECT url FROM url WHERE id = $1`, id).Scan(&oriurl)
 	switch err {
 	case sql.ErrNoRows:
-		return ""
+		return "", nil
 	case nil:
 		stmt, err := db.Prepare("UPDATE url SET hits = hits + 1, last_access_time = NOW() WHERE id = $1")
 		if err != nil {
-			panic(err)
+			return "", err
 		}
 		_, err = stmt.Exec(id)
 		if err != nil {
-			panic(err)
+			return "", err
 		}
 	default:
-		panic(err)
+		return "", err
 	}
-	return oriurl
+	return oriurl, nil
 }

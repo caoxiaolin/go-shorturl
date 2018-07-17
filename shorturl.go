@@ -56,7 +56,7 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 	if rdsval, _ := redis.String(serv.Rds.Do("GET", rdskey)); rdsval != "" {
 		res = rdsval
 	} else {
-		res = serv.GetOriUrl(uri[1:l])
+		res, _ = serv.GetOriUrl(uri[1:l])
 	}
 	if res != "" {
 		serv.Rds.Do("SET", rdskey, res, "EX", 86400, "NX")
