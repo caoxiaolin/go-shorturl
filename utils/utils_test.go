@@ -30,9 +30,16 @@ func TestConvert_62_to_10(t *testing.T) {
  * 测试从post request获取url参数
  */
 func TestGetPostUrl(t *testing.T) {
-	req := httptest.NewRequest("POST", "/", strings.NewReader("url=http://www.google.com"))
+	req := httptest.NewRequest("POST", "/", strings.NewReader("error=1"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	url := GetPostUrl(req)
+	if url != "" {
+		t.Error("Expected empty, but got", url)
+	}
+
+	req = httptest.NewRequest("POST", "/", strings.NewReader("url=http://www.google.com"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	url = GetPostUrl(req)
 	if url != "http://www.google.com" {
 		t.Error("Expected http://www.google.com, but got", url)
 	}
