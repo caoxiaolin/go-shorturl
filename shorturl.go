@@ -39,7 +39,7 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, res)
 	} else {
-		rdskey := "su_" + res
+		rdskey := "s_" + res
 		serv.Rds.Do("SET", rdskey, postUrl, "EX", 86400)
 		fmt.Fprintln(w, "http://"+address+"/"+res)
 	}
@@ -52,7 +52,7 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 	var res string
 	uri := r.URL.Path
 	l := len(uri)
-	rdskey := "su_" + uri[1:l]
+	rdskey := "s_" + uri[1:l]
 	if rdsval, _ := redis.String(serv.Rds.Do("GET", rdskey)); rdsval != "" {
 		res = rdsval
 	} else {

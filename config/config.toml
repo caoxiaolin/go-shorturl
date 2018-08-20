@@ -17,5 +17,4 @@ password = ""
 database = 0
 
 [log]
-logpath  = "./"
-logfile  = "access.log"
+logfile  = "./access.log"

@@ -9,8 +9,7 @@ import (
 var Logger *log.Logger
 
 func init() {
-	logFileName := config.Cfg.Log.Logpath + config.Cfg.Log.Logfile
-	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(config.Cfg.Log.Logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}

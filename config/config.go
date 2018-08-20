@@ -35,7 +35,6 @@ type server struct {
 }
 
 type log struct {
-	Logpath string
 	Logfile string
 }
 
