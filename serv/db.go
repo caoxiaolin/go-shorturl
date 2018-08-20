@@ -15,7 +15,7 @@ import (
 var db *sql.DB
 
 func init() {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Cfg.Database.Host, config.Cfg.Database.Port, config.Cfg.Database.UserName, config.Cfg.Database.PassWord, config.Cfg.Database.DbName)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable password=%s", config.Cfg.Database.Host, config.Cfg.Database.Port, config.Cfg.Database.UserName, config.Cfg.Database.DbName, config.Cfg.Database.PassWord)
 	db, _ = sql.Open("postgres", dsn)
 	db.SetMaxOpenConns(config.Cfg.Database.MaxConn)
 	db.Ping()

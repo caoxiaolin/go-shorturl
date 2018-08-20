@@ -35,5 +35,6 @@ func Conn() (redis.Conn, error) {
 			return nil, err
 		}
 	}
+
 	return c, nil
 }
