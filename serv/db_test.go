@@ -10,11 +10,6 @@ var (
 )
 
 func TestGetShortUrl(t *testing.T) {
-	_, err := GetShortUrl("")
-	if err == nil {
-		t.Error("Expected empty")
-	}
-
 	surl, _ = GetShortUrl(turl)
 	if surl == "" {
 		t.Error("getShortUrl return empty")

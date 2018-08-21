@@ -5,7 +5,6 @@ package serv
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/caoxiaolin/go-shorturl/config"
 	"github.com/caoxiaolin/go-shorturl/utils"
@@ -24,9 +23,6 @@ func init() {
 // GetShortUrl 将传入的URL入库并生成短链接返回
 func GetShortUrl(url string) (string, error) {
 	var id int64
-	if url == "" {
-		return "", errors.New("url is empty")
-	}
 	err := db.QueryRow(`INSERT INTO url (url, hits, create_time) VALUES ($1, 0, CURRENT_TIMESTAMP) RETURNING id`, url).Scan(&id)
 	if err != nil {
 		return "", err
